@@ -10,27 +10,31 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class ChangeSizeToLetter {
+public class ChangeSize {
     
     public void manipulatePdf(String src, String dest)
         throws IOException, DocumentException {
         PdfReader reader = new PdfReader(src);
-        Document document = new Document(PageSize.LETTER);
+        Rectangle pagesizeIn = reader.getPageSize(1);
+        Rectangle pagesizeOut = new Rectangle(pagesizeIn.getWidth() / 2, pagesizeIn.getHeight() / 2);
+        Document document = new Document(pagesizeOut);
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
         document.open();
         PdfContentByte content = writer.getDirectContent();
         PdfImportedPage page = writer.getImportedPage(reader, 1);
-        // adding the same page 16 times with a different offset
-        Rectangle pagesizeIn = reader.getPageSize(1);
-        Rectangle pagesizeOut = PageSize.LETTER;
 		float x = (pagesizeOut.getRight() - pagesizeIn.getRight()) / 2;
 		float y = (pagesizeOut.getTop() - pagesizeIn.getTop()) / 2;
         content.addTemplate(page, x, y);
+		int n = reader.getNumberOfPages();
+		//for (int i = 2; i < n; i++) {
+		//	page = writer.getImportedPage(reader, i);
+		//	content.addTemplate(page, x, y);
+		//}
         document.close();
     }
 
     public static void main(String[] args)
         throws IOException, DocumentException {
-        new ChangeSizeToLetter().manipulatePdf(args[0], args[1]);
+        new ChangeSize().manipulatePdf(args[0], args[1]);
     }
 }
