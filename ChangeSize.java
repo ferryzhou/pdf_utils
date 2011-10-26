@@ -16,20 +16,20 @@ public class ChangeSize {
         throws IOException, DocumentException {
         PdfReader reader = new PdfReader(src);
         Rectangle pagesizeIn = reader.getPageSize(1);
-        Rectangle pagesizeOut = new Rectangle(pagesizeIn.getWidth() / 2, pagesizeIn.getHeight() / 2);
-        Document document = new Document(pagesizeOut);
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
-        document.open();
-        PdfContentByte content = writer.getDirectContent();
-        PdfImportedPage page = writer.getImportedPage(reader, 1);
+        Rectangle pagesizeOut = new Rectangle(pagesizeIn.getWidth() * 3 / 4, pagesizeIn.getHeight() * 3 / 4);
 		float x = (pagesizeOut.getRight() - pagesizeIn.getRight()) / 2;
 		float y = (pagesizeOut.getTop() - pagesizeIn.getTop()) / 2;
-        content.addTemplate(page, x, y);
+ 
+		Document document = new Document(pagesizeOut);
+        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
+        document.open();
+        PdfImportedPage page = null;
 		int n = reader.getNumberOfPages();
-		//for (int i = 2; i < n; i++) {
-		//	page = writer.getImportedPage(reader, i);
-		//	content.addTemplate(page, x, y);
-		//}
+		for (int i = 1; i < n; i++) {
+			page = writer.getImportedPage(reader, i);
+			document.newPage();
+			writer.getDirectContent().addTemplate(page, x, y);
+		}
         document.close();
     }
 
