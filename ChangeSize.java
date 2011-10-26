@@ -15,7 +15,10 @@ public class ChangeSize {
     public void manipulatePdf(String src, String dest)
         throws IOException, DocumentException {
         PdfReader reader = new PdfReader(src);
+		Rectangle cb = reader.getCropBox(1);
         Rectangle pagesizeIn = reader.getPageSize(1);
+		System.out.printf("crop box: %f, %f\n", cb.getWidth(), cb.getHeight());
+		System.out.printf("page size: %f, %f\n", pagesizeIn.getWidth(), pagesizeIn.getHeight());
         Rectangle pagesizeOut = new Rectangle(pagesizeIn.getWidth() * 3 / 4, pagesizeIn.getHeight() * 3 / 4);
 		float x = (pagesizeOut.getRight() - pagesizeIn.getRight()) / 2;
 		float y = (pagesizeOut.getTop() - pagesizeIn.getTop()) / 2;
@@ -25,7 +28,7 @@ public class ChangeSize {
         document.open();
         PdfImportedPage page = null;
 		int n = reader.getNumberOfPages();
-		for (int i = 1; i < n; i++) {
+		for (int i = 1; i <= n; i++) {
 			page = writer.getImportedPage(reader, i);
 			document.newPage();
 			writer.getDirectContent().addTemplate(page, x, y);
