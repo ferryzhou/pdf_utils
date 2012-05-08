@@ -9,6 +9,8 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
+import com.itextpdf.text.pdf.parser.TextMarginFinder;
 
 // sometimes text margin is not consistent
 // use the smaller one
@@ -34,12 +36,14 @@ public class CropByTextMargin {
 			System.out.printf("%f %f %f %f\n", finder.getLlx(), finder.getLly(),
                 finder.getWidth(), finder.getHeight());
         }
+        return new Rectangle(0, 0);
 	}
 
     public void manipulatePdf(String src, String dest)
         throws IOException, DocumentException {
 
         PdfReader reader = new PdfReader(src);
+        estimateCropRegion(reader);
         Rectangle pagesizeIn = reader.getPageSize(1);
 		System.out.printf("page size: %f, %f\n", pagesizeIn.getWidth(), pagesizeIn.getHeight());
         Rectangle pagesizeOut = new Rectangle(pagesizeIn.getWidth() * 3 / 4, pagesizeIn.getHeight() * 3 / 4);
