@@ -29,10 +29,10 @@ public class CropByTextMargin {
         TextMarginFinder finder;
         for (int i = 1; i <= reader.getNumberOfPages(); i++) {
             finder = parser.processContent(i, new TextMarginFinder());
-            Rectangle rect = Rectangle.new(finder.getLlx(), finder.getLly(),
-                finder.getWidth(), finder.getHeight());
+            //Rectangle rect = Rectangle.new(finder.getLlx(), finder.getLly(),
+            //    finder.getWidth(), finder.getHeight());
 			System.out.printf("%f %f %f %f\n", finder.getLlx(), finder.getLly(),
-                finder.getWidth(), finder.getHeight())
+                finder.getWidth(), finder.getHeight());
         }
 	}
 
