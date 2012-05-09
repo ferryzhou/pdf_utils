@@ -34,36 +34,48 @@ public class CropByTextMargin {
             try {
             //Rectangle rect = Rectangle.new(finder.getLlx(), finder.getLly(),
             //    finder.getWidth(), finder.getHeight());
-			System.out.printf("%f %f %f %f\n", finder.getLlx(), finder.getLly(), finder.getWidth(), finder.getHeight());
+			//System.out.printf("%f %f %f %f\n", finder.getLlx(), finder.getLly(), finder.getWidth(), finder.getHeight());
 			//System.out.printf("%f\n", finder.getWidth());
             } catch (NullPointerException e) {
 				System.out.printf("%d\n", i);
             }
         }
-        return new Rectangle(0, 0);
+        return new Rectangle(81, 54, 81+359+10, 54+547+10);
 	}
 
     public void manipulatePdf(String src, String dest)
         throws IOException, DocumentException {
 
         PdfReader reader = new PdfReader(src);
-        estimateCropRegion(reader);
-        Rectangle pagesizeIn = reader.getPageSize(1);
+        Rectangle rect = estimateCropRegion(reader);
+        Rectangle pagesizeIn = reader.getPageSize((int)(reader.getNumberOfPages()/2));
 		System.out.printf("page size: %f, %f\n", pagesizeIn.getWidth(), pagesizeIn.getHeight());
-        Rectangle pagesizeOut = new Rectangle(pagesizeIn.getWidth() * 3 / 4, pagesizeIn.getHeight() * 3 / 4);
+        Rectangle pagesizeOut = new Rectangle(rect.getWidth(), rect.getHeight());
+		System.out.printf("new page size: %f, %f\n", pagesizeOut.getWidth(), pagesizeOut.getHeight());
 
-		float x = (pagesizeOut.getRight() - pagesizeIn.getRight()) / 2;
-		float y = (pagesizeOut.getTop() - pagesizeIn.getTop()) / 2;
+		float x = -rect.getLeft();
+		float y = -rect.getBottom();
 
 		Document document = new Document(pagesizeOut);
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(dest));
         document.open();
         PdfImportedPage page = null;
 		int n = reader.getNumberOfPages();
+        PdfReaderContentParser parser = new PdfReaderContentParser(reader);
+        TextMarginFinder finder;
 		for (int i = 1; i <= n; i++) {
+            finder = parser.processContent(i, new TextMarginFinder());
+            float llx = x; float lly = y;
+            try {
+            	llx = -finder.getLlx()+5;
+            	lly = -finder.getLly()+5;
+            } catch (NullPointerException e) {
+				System.out.printf("%d\n", i);
+            }
+
 			page = writer.getImportedPage(reader, i);
 			document.newPage();
-			writer.getDirectContent().addTemplate(page, x, y);
+			writer.getDirectContent().addTemplate(page, llx, lly);
 		}
         document.close();
     }
