@@ -13,7 +13,7 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Rectangle;
 
 // java StampText a.pdf ao.pdf 2
-public class StampText {
+public class AddPageNumbers {
     
     public static void main(String[] args)
         throws DocumentException, IOException {
